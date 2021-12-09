@@ -52,6 +52,8 @@ int main(int Argc, const char *Argv[]) {
   PO::Option<PO::Toggle> PropRefTypes(
       PO::Description("Disable Reference types proposal"sv));
   PO::Option<PO::Toggle> PropSIMD(PO::Description("Disable SIMD proposal"sv));
+  PO::Option<PO::Toggle> PropThreads(
+      PO::Description("Enable Threads proposal"sv));
   PO::Option<PO::Toggle> PropAll(PO::Description("Enable all features"sv));
 
   PO::Option<PO::Toggle> ConfEnableInstructionCounting(PO::Description(
@@ -103,6 +105,7 @@ int main(int Argc, const char *Argv[]) {
            .add_option("disable-bulk-memory"sv, PropBulkMemOps)
            .add_option("disable-reference-types"sv, PropRefTypes)
            .add_option("disable-simd"sv, PropSIMD)
+           .add_option("enable-threads"sv, PropThreads)
            .add_option("enable-all"sv, PropAll)
            .add_option("time-limit"sv, TimeLim)
            .add_option("gas-limit"sv, GasLim)
@@ -139,9 +142,13 @@ int main(int Argc, const char *Argv[]) {
   if (PropSIMD.value()) {
     Conf.removeProposal(WasmEdge::Proposal::SIMD);
   }
-  /// Left for the future proposals.
-  /// if (PropAll.value()) {
-  /// }
+  if (PropThreads.value()) {
+    Conf.addProposal(WasmEdge::Proposal::Threads);
+  }
+  if (PropAll.value()) {
+    Conf.addProposal(WasmEdge::Proposal::Threads);
+  }
+
   std::optional<std::chrono::system_clock::time_point> Timeout;
   if (TimeLim.value() > 0) {
     Timeout = std::chrono::system_clock::now() +
