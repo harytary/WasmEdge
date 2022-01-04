@@ -102,10 +102,9 @@ Expect<void> Validator::validate(const AST::Module &Mod) {
   }
 
   /// In current version, memory must be <= 1.
-  if (Checker.getMemories() > 1) {
+  if (Checker.getMemories() > 1 && !Conf.hasProposal(Proposal::MultiMemories)) {
     spdlog::error(ErrCode::MultiMemories);
-    spdlog::error(ErrInfo::InfoInstanceBound(ExternalType::Memory,
-                                             Checker.getMemories(), 1));
+    spdlog::error(ErrInfo::InfoProposal(Proposal::MultiMemories));
     spdlog::error(ErrInfo::InfoAST(ASTNodeAttr::Module));
     return Unexpect(ErrCode::MultiMemories);
   }
